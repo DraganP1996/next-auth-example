@@ -42,7 +42,7 @@ const LoginForm = () => {
       const data = await login(values);
 
       setError(data?.error);
-      // setSuccess(data?.success);
+      setSuccess(data?.success);
     });
   };
 

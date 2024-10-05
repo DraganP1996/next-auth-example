@@ -40,6 +40,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/auth/error",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") return true;
+      if (!user.id) return false;
+
+      const existingUser = await getUserById(user.id);
+
+      if (!existingUser?.emailVerified) return false;
+
+      //TODO: Add 2FA Check
+      return true;
+    },
     async jwt({ token }: { token: JWT }) {
       if (!token.sub) return token;
 
@@ -51,7 +62,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ token, session }) {
-      console.log({ sessionToken: token });
       if (session.user && token.sub) {
         session.user.id = token.sub;
       }
