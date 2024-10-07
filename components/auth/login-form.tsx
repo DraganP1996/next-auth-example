@@ -30,6 +30,7 @@ const LoginForm = () => {
     searchParams.get("error") === "OAuthAccountNotLinked"
       ? "Email already used with different provider"
       : "";
+  const callbackUrl = searchParams.get("callbackUrl");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>();
   const [show2F, setShow2F] = useState<boolean>(false);
@@ -42,7 +43,7 @@ const LoginForm = () => {
 
     startTransition(async () => {
       try {
-        const data = await login(values);
+        const data = await login(values, callbackUrl);
 
         if (data?.error) {
           form.reset();

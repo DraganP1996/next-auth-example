@@ -34,8 +34,6 @@ const NewPasswordForm = () => {
     setError("");
     setSuccess("");
 
-    console.log(values);
-
     startTransition(async () => {
       const data = await newPassword(values, token);
 

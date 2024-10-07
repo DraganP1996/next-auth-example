@@ -31,8 +31,6 @@ const ResetForm = () => {
     setError("");
     setSuccess("");
 
-    console.log(values);
-
     startTransition(async () => {
       const data = await reset(values);
 

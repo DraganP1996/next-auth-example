@@ -13,7 +13,7 @@ import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
 import { db } from "@/lib/db";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 
-export const login = async (values: z.infer<typeof LoginSchema>) => {
+export const login = async (values: z.infer<typeof LoginSchema>, callbackUrl?: string | null) => {
   const validatedFields = LoginSchema.safeParse(values);
 
   if (!validatedFields.success) {
@@ -23,8 +23,6 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
   const { email, password, code } = validatedFields.data;
 
   const existingUser = await getUserByEmail(email);
-
-  console.log("Existing user", existingUser);
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
     return { error: "Email does not exist!" };
@@ -40,10 +38,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
 
   if (existingUser.isTwoFactorEnabled && existingUser.email) {
     if (code) {
-      console.log("Reveived code", code);
       const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email);
-
-      console.log("Check two factor token", twoFactorToken);
 
       if (!twoFactorToken) {
         return { error: "Invalid code" };
@@ -58,8 +53,6 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       if (hasExpired) {
         return { error: "Code expired!" };
       }
-
-      console.log("The token is good!");
 
       await db.twoFactorToken.delete({
         where: { id: twoFactorToken.id },
@@ -83,7 +76,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: DEFAULT_LOGIN_REDIRECT,
+      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     });
   } catch (error) {
     if (error instanceof AuthError) {
