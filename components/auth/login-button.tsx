@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import { DialogContent } from "@radix-ui/react-dialog";
@@ -13,15 +12,7 @@ interface LoginButtonProps {
 }
 
 export const LoginButton = ({ children, mode = "redirect", asChild }: LoginButtonProps) => {
-  const router = useRouter();
-
-  const onCLick = () => {
-    router.push("/auth/login");
-  };
-
-  // if (mode === "modal") {
-  //   return <span>TODO: Implement Modal</span>;
-  // }
+  console.log(mode);
 
   return (
     <Dialog>
